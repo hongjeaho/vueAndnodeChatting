@@ -6,7 +6,7 @@ app.socketSet = io => {
 
     socket.on('message', message => {
       console.log('message socket event : ', message)
-      socket.broadcast.emit('message', createMessage('test', message))
+      socket.broadcast.emit('message', message)
     })
 
     socket.on('login', message => {
@@ -21,14 +21,6 @@ app.socketSet = io => {
       console.log('disconnection socket event')
     })
   })
-}
-
-const createMessage= (username, message) => {
-  return {
-    icon: '',
-    username: username,
-    message: message
-  }
 }
 
 module.exports = app

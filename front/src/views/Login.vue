@@ -7,15 +7,15 @@
       <v-text-field
           v-model="userName"
           :rules="nameRules"
-          label="user name"
-          equired />
+          label="대화명"
+          required />
       <v-select
         v-model="room"
-        :items="rooms"
-        :reules = "roomRules"
-        item-text="name"
-        item-value="number"
-        label="rooms"
+        :items="roomList"
+        :rules = "[v => !!v || '대화방을 선책해 주세요']"
+        item-text="text"
+        item-value="code"
+        label="대화방"
         required />
 
       <v-btn
@@ -31,34 +31,36 @@
 </template>
 
 <script>
+
+import {mapMutations, mapState} from 'vuex'
+
 export default {
+  computed: {
+    ...mapState('chatting', ['roomList'])
+  },
   data () {
     return {
       valid: true,
-      userName: '',
       nameRules: [
-          v => !!v || 'name is required',
-          v => (v && v.length <= 5 || 'name must be less than 5 characters')
+          v => !!v || '대화명을 입력해 주세요',
+          v => (v && v.length > 2 || '대화명을 두자리 이상 입력해 주세요')
       ],
-      roomRules: [
-        v => !!v || 'item is required'
-      ],
-      rooms: [
-        {number: '001', name: 'Room 1'},
-        {number: '002', name: 'Room 2'},
-        {number: '003', name: 'Room 3'},
-      ],
+      userName: null,
       room: null
     }
   },
   methods: {
+    ...mapMutations('chatting', ['SET_LOGIN']),
     validate () {
-      this.$refs.form.validate()
+      if (!this.$refs.form.validate()) return
+
+      this.SET_LOGIN({
+        userName: this.userName,
+        room: this.roomList.filter(v => v.code === this.room).shift()
+      })
+
+      this.$router.push({name: 'chatting'})
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>
